@@ -617,7 +617,7 @@ def solve(image):
 
 
 def main():
-    
+    # code bẩn quá =))
     image_path = r"D:\prj 2\z6495321724781_d1d742784d6ff262dfdb9826d447b93f.jpg"
     output_image_path = r"D:\prj 2\output\result.jpg"  # Đảm bảo output có .jpg hoặc .png
 
