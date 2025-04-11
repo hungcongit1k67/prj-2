@@ -5,7 +5,7 @@ import model
 
 from model import CNN_Model
 
-
+# chuẩn hóa hình ảnh về kích thước 28x28 và chuyển đổi sang định dạng (1, 28, 28, 1); chuẩn hóa về khoảng [0, 1]
 def preprocess_image(img):
     if len(img.shape) == 3 and img.shape[2] == 3:
         img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
@@ -29,7 +29,7 @@ def convert_binary_image(image):
     thresh = cv2.morphologyEx(thresh, cv2.MORPH_CLOSE, kernel)
     return thresh
 
-
+# Tự động cắt lấy vùng chứa thông tin bằng 4 góc
 def crop_4_goc(image):
     thresh = convert_binary_image(image)
     # Tìm các contours
@@ -72,7 +72,7 @@ def crop_4_goc(image):
     thresh = cv2.warpPerspective(thresh, matrix, (width, height))
     return image, thresh
 
-
+# phát hiện cạnh bằng Sobel trong ảnh --> Giúp tìm các vùng có cạnh nổi bật (ví dụ khung ô, chữ)
 def sobel_edge_detection(image):
     # Chuyển ảnh sang grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
@@ -90,7 +90,7 @@ def sobel_edge_detection(image):
     # Trả về ảnh với các cạnh đã được phát hiện
     return edges
 
-
+# Trả ra danh sách các vị trí chấm tròn để định vị từng phần trên phiếu
 def find_local(image):
     # Cắt và chuyển ảnh sang chế độ nhị phân
 
@@ -134,7 +134,7 @@ def find_local(image):
 
     return filtered_local, image
 
-
+# Trích xuất ảnh vùng Số Báo Danh.
 def find_SBD_image(image):
     local, image = find_local(image)
 
@@ -153,7 +153,7 @@ def find_SBD_image(image):
 
     return image[y:y + h, x:x + w], x, y, w, h
 
-
+# Trích xuất ảnh mã đề thi.
 def find_MDT_image(image):
     local, image = find_local(image)
 
@@ -253,8 +253,8 @@ def read_SBD(image):
     SBD_image, x, y, w, h = find_SBD_image(image)
     offx = SBD_image.shape[1] // 6  # Chia theo chiều rộng (width)
     offy = SBD_image.shape[0] // 10  # Chia theo chiều cao (height)
-    SBD_map = {i: [] for i in range(6)}
-    SBD_rec = []
+    SBD_map = {i: [] for i in range(6)} # danh sách chữ số đã tô
+    SBD_rec = [] # tọa độ các ô được tô
     if not os.path.exists("dataCNN"):
         os.makedirs("dataCNN")
 
@@ -606,7 +606,7 @@ def solve(image):
 
     # Tạo output dưới dạng JSON
     result = {
-        "SBD": {k + 1: v for k, v in SBD_map.items()},
+        "SBD": {k + 1: v for k, v in SBD_map.items()}, # items(): trả về một danh sách các tuple chứa key-value của dict
         "MDT": {k + 1: v for k, v in MDT_map.items()},
         "Part1": {k + 1: v for k, v in Part1_map.items()},
         "Part2": {k + 1: v for k, v in Part2_map.items()},
